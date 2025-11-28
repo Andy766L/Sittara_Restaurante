@@ -1,0 +1,51 @@
+import 'package:flutter/material.dart';
+import '../models.dart';
+
+class DataService extends ChangeNotifier {
+  final List<Restaurant> _restaurants = [
+    Restaurant(id: '1', name: 'La Bella Italia', image: 'https://images.unsplash.com/photo-1723608334799-e6398469cb04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpdGFsaWFuJTIwcmVzdGF1cmFudCUyMGZvb2R8ZW58MXx8fHwxNjM4NTAxNzJ8MA&ixlib=rb-4.1.0&q=80&w=1080', address: 'Calle Mayor 45, Madrid', rating: 4.5, cuisine: 'Italiana', phone: '+34 912 345 678', hours: '12:00 - 23:00', description: 'Auténtica cocina italiana con ingredientes frescos importados directamente desde Italia.', lat: 40.4168, lng: -3.7038),
+    Restaurant(id: '2', name: 'Sakura Sushi', image: 'https://images.unsplash.com/photo-1629712257540-e03dfbd96b0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxqYXBhbmVzZSUyMHJlc3RhdXJhbnQlMjBzdXNoaXxlbnwxfHx8fDE3NjM4NTAxNzN8MA&ixlib=rb-4.1.0&q=80&w=1080', address: 'Paseo de la Castellana 89, Madrid', rating: 4.8, cuisine: 'Japonesa', phone: '+34 913 456 789', hours: '13:00 - 23:30', description: 'Restaurante japonés especializado en sushi y sashimi de la más alta calidad.', lat: 40.4300, lng: -3.6900),
+    Restaurant(id: '3', name: 'El Mexicano Loco', image: 'https://images.unsplash.com/photo-1665541719551-655b587161e4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtZXhpY2FuJTIwcmVzdGF1cmFudCUyMHRhY29zfGVufDF8fHx8MTc2Mzc5OTU5N3ww&ixlib=rb-4.1.0&q=80&w=1080', address: 'Gran Vía 23, Madrid', rating: 4.3, cuisine: 'Mexicana', phone: '+34 914 567 890', hours: '12:30 - 00:00', description: 'Sabores auténticos mexicanos con recetas tradicionales y ambiente festivo.', lat: 40.4200, lng: -3.7050),
+    Restaurant(id: '4', name: 'Le Petit Bistro', image: 'https://images.unsplash.com/photo-1759419038843-29749ac4cd2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwcmVzdGF1cmFudCUyMGludGVyaW9yfGVufDF8fHx8MTc2MzgwNzU3Mnww&ixlib=rb-4.1.0&q=80&w=1080', address: 'Calle Serrano 12, Madrid', rating: 4.6, cuisine: 'Francesa', phone: '+34 915 678 901', hours: '13:00 - 23:00', description: 'Elegante bistro francés con platos clásicos y una excelente carta de vinos.', lat: 40.4250, lng: -3.6900),
+    Restaurant(id: '5', name: 'Casa Pepe', image: 'https://images.unsplash.com/photo-1722739541715-1d59cde9cca4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxtb2Rlcm4lMjByZXN0YXVyYW50JTIwZGluaW5nfGVufDF8fHx8MTc2Mzc2MjA0M3ww&ixlib=rb-4.1.0&q=80&w=1080', address: 'Plaza Santa Ana 8, Madrid', rating: 4.4, cuisine: 'Española', phone: '+34 916 789 012', hours: '12:00 - 00:00', description: 'Tapas españolas tradicionales en un ambiente acogedor y familiar.', lat: 40.4150, lng: -3.7000),
+    Restaurant(id: '6', name: 'The Cozy Corner', image: 'https://images.unsplash.com/photo-1762806883627-4bcbfad98a2c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxjb3p5JTIwcmVzdGF1cmFudCUyMGFtYmlhbmNlfGVufDF8fHx8MTc2MzgxOTI5Nnww&ixlib=rb-4.1.0&q=80&w=1080', address: 'Calle Fuencarral 67, Madrid', rating: 4.7, cuisine: 'Internacional', phone: '+34 917 890 123', hours: '11:00 - 23:30', description: 'Ambiente acogedor con una fusión de sabores internacionales.', lat: 40.4280, lng: -3.7020),
+  ];
+
+  final List<Review> _reviews = [
+    Review(id: '1', restaurantId: '1', userName: 'María García', userAvatar: 'https://images.unsplash.com/photo-1704726135027-9c6f034cfa41?w=100&h=100&fit=crop', rating: 5, comment: 'Excelente comida italiana, la pasta estaba deliciosa y el servicio impecable. Totalmente recomendado.', date: '2024-11-15'),
+    Review(id: '2', restaurantId: '1', userName: 'Carlos Rodríguez', userAvatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop', rating: 4, comment: 'Muy buen ambiente y comida de calidad. Los precios son algo elevados pero vale la pena.', date: '2024-11-10'),
+    Review(id: '3', restaurantId: '1', userName: 'Ana Martínez', userAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop', rating: 5, comment: 'Mi restaurante italiano favorito en Madrid. Siempre que voy me encanta todo.', date: '2024-11-05'),
+    Review(id: '4', restaurantId: '2', userName: 'Pedro Sánchez', userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', rating: 5, comment: 'El mejor sushi que he probado en España. Fresco y delicioso.', date: '2024-11-18'),
+  ];
+
+  final List<Reservation> _reservations = [
+    Reservation(id: '1', restaurantId: '1', restaurantName: 'La Bella Italia', restaurantImage: 'https://images.unsplash.com/photo-1723608334799-e6398469cb04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxpdGFsaWFuJTIwcmVzdGF1cmFudCUyMGZvb2R8ZW58MXx8fHwxNjM4NTAxNzJ8MA&ixlib=rb-4.1.0&q=80&w=1080', date: '2024-11-25', time: '20:00', guests: 2, status: ReservationStatus.confirmed),
+    Reservation(id: '2', restaurantId: '2', restaurantName: 'Sakura Sushi', restaurantImage: 'https://images.unsplash.com/photo-1629712257540-e03dfbd96b0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxqYXBhbmVzZSUyMHJlc3RhdXJhbnQlMjBzdXNoaXxlbnwxfHx8fDE3NjM4NTAxNzN8MA&ixlib=rb-4.1.0&q=80&w=1080', date: '2024-11-28', time: '19:30', guests: 4, status: ReservationStatus.pending),
+    Reservation(id: '3', restaurantId: '4', restaurantName: 'Le Petit Bistro', restaurantImage: 'https://images.unsplash.com/photo-1759419038843-29749ac4cd2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwcmVzdGF1cmFudCUyMGludGVyaW9yfGVufDF8fHx8MTc2MzgwNzU3Mnww&ixlib=rb-4.1.0&q=80&w=1080', date: '2024-11-20', time: '21:00', guests: 3, status: ReservationStatus.cancelled),
+  ];
+
+  final User _mockUser = User(name: 'Juan Pérez', email: 'juan.perez@email.com', phone: '+34 612 345 678', avatar: 'https://images.unsplash.com/photo-1704726135027-9c6f034cfa41?w=200&h=200&fit=crop');
+
+
+  List<Restaurant> get restaurants => _restaurants;
+  List<Review> get reviews => _reviews;
+  List<Reservation> get reservations => _reservations;
+  User get mockUser => _mockUser;
+
+
+  List<Review> getReviewsForRestaurant(String restaurantId) {
+    return _reviews.where((review) => review.restaurantId == restaurantId).toList();
+  }
+
+  Future<void> addReservation(Reservation reservation) async {
+    await Future.delayed(const Duration(seconds: 1));
+    _reservations.add(reservation);
+    notifyListeners();
+  }
+
+  Future<void> addReview(Review review) async {
+    await Future.delayed(const Duration(seconds: 1));
+    _reviews.insert(0, review); // Insert at the beginning to show newest first
+    notifyListeners();
+  }
+}
