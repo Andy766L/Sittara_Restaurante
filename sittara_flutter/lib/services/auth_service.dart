@@ -1,55 +1,80 @@
 import 'package:flutter/material.dart';
-import '../data/mock_data.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models.dart';
+import '../services/supabase_service.dart';
+
+typedef SupabaseUser = User; // Alias for clarity, avoid conflicts with our models.User
 
 class AuthService extends ChangeNotifier {
-  User? _currentUser;
+  models.User? _currentUser; // Use models.User to avoid conflict
 
-  User? get currentUser => _currentUser;
+  models.User? get currentUser => _currentUser;
 
   bool get isLoggedIn => _currentUser != null;
 
-  Future<User?> login(String email, String password) async {
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
+  AuthService() {
+    _currentUser = _mapSupabaseUserToAppUser(supabase.auth.currentUser);
+    supabase.auth.onAuthStateChange.listen((data) {
+      _currentUser = _mapSupabaseUserToAppUser(data.session?.user);
+      notifyListeners();
+    });
+  }
 
-    // This is a mock authentication.
-    // In a real app, you would make an API call.
-    if (email.toLowerCase() == mockUser.email.toLowerCase() && password == 'password123') {
-      _currentUser = mockUser;
-      notifyListeners(); // Notify widgets that are listening to this service
+  models.User? _mapSupabaseUserToAppUser(SupabaseUser? sbUser) {
+    if (sbUser == null) return null;
+    return models.User(
+      name: sbUser.userMetadata?['name'] ?? sbUser.email?.split('@').first ?? 'User',
+      email: sbUser.email!,
+      phone: sbUser.userMetadata?['phone'] ?? '',
+      avatar: sbUser.userMetadata?['avatar_url'] ?? 'https://www.gravatar.com/avatar/?d=mp', // Default avatar
+    );
+  }
+
+  Future<models.User?> login(String email, String password) async {
+    try {
+      final AuthResponse response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      _currentUser = _mapSupabaseUserToAppUser(response.user);
+      notifyListeners();
       return _currentUser;
-    } else {
+    } on AuthException catch (e) {
+      print('Supabase login error: ${e.message}');
+      return null;
+    } catch (e) {
+      print('Unexpected login error: $e');
       return null;
     }
   }
 
-  Future<User> register({
+  Future<models.User?> register({
     required String name,
     required String email,
     required String phone,
     required String password,
   }) async {
-    // Simulate network delay for registration
-    await Future.delayed(const Duration(seconds: 1));
-
-    // In a real app, this would create a new user in the backend.
-    // Here, we'll create a new User object and log them in immediately.
-    _currentUser = User(
-      name: name,
-      email: email,
-      phone: phone,
-      avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&h=200&fit=crop', // A generic new user avatar
-    );
-    
-    notifyListeners();
-    return _currentUser!;
+    try {
+      final AuthResponse response = await supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {'name': name, 'phone': phone}, // Store name and phone in user_metadata
+      );
+      _currentUser = _mapSupabaseUserToAppUser(response.user);
+      notifyListeners();
+      return _currentUser;
+    } on AuthException catch (e) {
+      print('Supabase registration error: ${e.message}');
+      return null;
+    } catch (e) {
+      print('Unexpected registration error: $e');
+      return null;
+    }
   }
 
   Future<void> logout() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
-    _currentUser = null;
+    await supabase.auth.signOut();
+    // The onAuthStateChange listener will handle setting _currentUser to null
     notifyListeners();
   }
 }

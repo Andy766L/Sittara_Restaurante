@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Utensils, Mail, Lock } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { signInWithPassword } from '../../services/api';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -11,15 +12,28 @@ interface LoginScreenProps {
 export function LoginScreen({ onLogin, onNavigate }: LoginScreenProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    onLogin();
+  const handleLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await signInWithPassword(email, password);
+      onLogin();
+    } catch (e: any) {
+      setError(e.message || 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const goldColor = '#D4AF37';
 
   return (
     <div className="h-full bg-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="bg-[#4C7BF3] rounded-full p-6 mb-8">
+        <div style={{ backgroundColor: goldColor }} className="rounded-full p-6 mb-8">
           <Utensils className="w-12 h-12 text-white" />
         </div>
         
@@ -37,6 +51,7 @@ export function LoginScreen({ onLogin, onNavigate }: LoginScreenProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
@@ -48,28 +63,35 @@ export function LoginScreen({ onLogin, onNavigate }: LoginScreenProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
           <button
             onClick={() => onNavigate('forgot-password')}
-            className="text-sm text-[#4C7BF3] hover:underline"
+            style={{ color: goldColor }}
+            className="text-sm hover:underline"
           >
             ¿Olvidaste tu contraseña?
           </button>
 
           <Button
             onClick={handleLogin}
-            className="w-full h-12 bg-[#4C7BF3] hover:bg-[#3a5fc7] text-white rounded-2xl"
+            style={{ backgroundColor: goldColor }}
+            className="w-full h-12 hover:bg-opacity-90 text-black rounded-2xl"
+            disabled={isLoading}
           >
-            Iniciar sesión
+            {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
           </Button>
 
           <div className="text-center pt-4">
             <span className="text-gray-600">¿No tienes cuenta? </span>
             <button
               onClick={() => onNavigate('register')}
-              className="text-[#4C7BF3] hover:underline"
+              style={{ color: goldColor }}
+              className="hover:underline"
             >
               Regístrate
             </button>

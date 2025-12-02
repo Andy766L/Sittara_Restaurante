@@ -47,6 +47,7 @@ class ReservationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -55,7 +56,7 @@ class ReservationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
         ),
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withAlpha((255 * 0.1).round()),
         child: Row(
           children: [
             // Restaurant Image
@@ -65,11 +66,12 @@ class ReservationCard extends StatelessWidget {
               child: Image.network(
                 reservation.restaurantImage,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+                errorBuilder: (context, error, stackTrace) => Center(
+                  child: Icon(Icons.broken_image, color: theme.iconTheme.color),
+                ),
               ),
             ),
-            
+
             // Reservation Details
             Expanded(
               child: Padding(
@@ -85,24 +87,29 @@ class ReservationCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             reservation.restaurantName,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: _getStatusColor(reservation.status),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             _getStatusLabel(reservation.status),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: _getStatusTextColor(reservation.status),
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: _getStatusTextColor(reservation.status),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -112,11 +119,20 @@ class ReservationCard extends StatelessWidget {
                     // Date
                     Row(
                       children: [
-                        const Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey),
+                        Icon(
+                          Icons.calendar_today_outlined,
+                          size: 16,
+                          color: theme.iconTheme.color,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          DateFormat('dd \'de\' MMMM \'de\' yyyy', 'es').format(DateTime.parse(reservation.date)),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade700),
+                          DateFormat(
+                            'dd \'de\' MMMM \'de\' yyyy',
+                            'es',
+                          ).format(DateTime.parse(reservation.date)),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
                         ),
                       ],
                     ),
@@ -125,18 +141,30 @@ class ReservationCard extends StatelessWidget {
                     // Time and Guests
                     Row(
                       children: [
-                        const Icon(Icons.access_time_outlined, size: 16, color: Colors.grey),
+                        Icon(
+                          Icons.access_time_outlined,
+                          size: 16,
+                          color: theme.iconTheme.color,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           reservation.time,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade700),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
                         ),
                         const SizedBox(width: 16),
-                        const Icon(Icons.people_outline, size: 16, color: Colors.grey),
+                        Icon(
+                          Icons.people_outline,
+                          size: 16,
+                          color: theme.iconTheme.color,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           '${reservation.guests} personas',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey.shade700),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
                         ),
                       ],
                     ),

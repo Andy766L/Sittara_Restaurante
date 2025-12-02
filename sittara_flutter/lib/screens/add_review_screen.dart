@@ -8,10 +8,10 @@ class AddReviewScreen extends StatefulWidget {
   const AddReviewScreen({super.key, required this.restaurant});
 
   @override
-  _AddReviewScreenState createState() => _AddReviewScreenState();
+  AddReviewScreenState createState() => AddReviewScreenState();
 }
 
-class _AddReviewScreenState extends State<AddReviewScreen> {
+class AddReviewScreenState extends State<AddReviewScreen> {
   int _rating = 0;
   final TextEditingController _commentController = TextEditingController();
   bool _submitted = false;
@@ -30,7 +30,9 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, selecciona una calificación y escribe un comentario.'),
+          content: Text(
+            'Por favor, selecciona una calificación y escribe un comentario.',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -59,12 +61,18 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
 
   String _getRatingText(int rating) {
     switch (rating) {
-      case 1: return 'Malo';
-      case 2: return 'Regular';
-      case 3: return 'Bueno';
-      case 4: return 'Muy bueno';
-      case 5: return '¡Excelente!';
-      default: return '';
+      case 1:
+        return 'Malo';
+      case 2:
+        return 'Regular';
+      case 3:
+        return 'Bueno';
+      case 4:
+        return 'Muy bueno';
+      case 5:
+        return '¡Excelente!';
+      default:
+        return '';
     }
   }
 
@@ -76,24 +84,26 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4C7BF3);
-
     if (_submitted) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircleAvatar(
                 radius: 60,
-                backgroundColor: Colors.green.shade100,
-                child: Icon(Icons.star, size: 60, color: Colors.green.shade700),
+                backgroundColor: Colors.green.withAlpha((255 * 0.1).round()),
+                child: Icon(
+                  Icons.check_circle_outline,
+                  size: 60,
+                  color: Colors.green.shade700,
+                ),
               ),
               const SizedBox(height: 32),
               Text(
                 '¡Gracias por tu reseña!',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
               Padding(
@@ -101,7 +111,7 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
                 child: Text(
                   'Tu opinión nos ayuda a mejorar.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ],
@@ -111,12 +121,7 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Agregar reseña'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
+      appBar: AppBar(title: const Text('Agregar reseña'), elevation: 1),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -125,20 +130,20 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
             Text(
               widget.restaurant.name,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
             Text(
               '¿Cómo fue tu experiencia?',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 32),
 
             Text(
               'Calificación',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
             _buildStarRating(),
@@ -148,14 +153,17 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
                 child: Text(
                   _getRatingText(_rating),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
             const SizedBox(height: 32),
 
             Text(
               'Escribe tu opinión',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             TextField(
@@ -174,14 +182,19 @@ class _AddReviewScreenState extends State<AddReviewScreen> {
             const SizedBox(height: 32),
 
             ElevatedButton(
-              onPressed: _rating == 0 || _commentController.text.trim().isEmpty ? null : _handleSubmit,
+              onPressed: _handleSubmit,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: const Text('Enviar reseña', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Enviar reseña',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),

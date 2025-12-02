@@ -9,10 +9,11 @@ class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
 
@@ -81,23 +82,27 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 child: const CircleAvatar(
                   radius: 70,
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.restaurant_menu, size: 70, color: primaryColor),
+                  child: Icon(
+                    Icons.restaurant_menu,
+                    size: 70,
+                    color: primaryColor,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
               Text(
                 'Sittara',
                 style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Reserva tu mesa perfecta',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
-                    ),
+                  color: Colors.white.withAlpha(200),
+                ),
               ),
             ],
           ),

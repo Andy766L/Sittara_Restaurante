@@ -4,10 +4,7 @@ import '../models.dart';
 class ReviewCard extends StatelessWidget {
   final Review review;
 
-  const ReviewCard({
-    super.key,
-    required this.review,
-  });
+  const ReviewCard({super.key, required this.review});
 
   Widget _buildStars(int rating) {
     return Row(
@@ -24,13 +21,12 @@ class ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.05),
+      shadowColor: Colors.black.withAlpha((255 * 0.05).round()),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
@@ -39,9 +35,13 @@ class ReviewCard extends StatelessWidget {
             CircleAvatar(
               radius: 28,
               backgroundImage: NetworkImage(review.userAvatar),
-              backgroundColor: Colors.grey.shade300,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
               // Fallback child in case of error
-              child: const Icon(Icons.person_outline, size: 28, color: Colors.white),
+              child: Icon(
+                Icons.person_outline,
+                size: 28,
+                color: theme.iconTheme.color,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -51,17 +51,17 @@ class ReviewCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                       Text(
+                      Text(
                         review.userName,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
                         review.date,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.grey.shade600,
-                            ),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                       ),
                     ],
                   ),
@@ -70,8 +70,8 @@ class ReviewCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     review.comment,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      height: 1.4 // line-height
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      height: 1.4, // line-height
                     ),
                   ),
                 ],

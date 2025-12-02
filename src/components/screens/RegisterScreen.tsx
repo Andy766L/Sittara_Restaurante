@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, User, Mail, Lock, Phone } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import { signUp } from '../../services/api';
 
 interface RegisterScreenProps {
   onRegister: () => void;
@@ -13,11 +14,33 @@ export function RegisterScreen({ onRegister, onBack }: RegisterScreenProps) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleRegister = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await signUp(email, password, {
+        data: {
+          name: name,
+          phone: phone,
+        }
+      });
+      onRegister();
+    } catch (e: any) {
+      setError(e.message || 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const goldColor = '#D4AF37';
 
   return (
     <div className="h-full bg-white flex flex-col">
       <div className="flex items-center gap-4 p-4 border-b">
-        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full">
+        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full" disabled={isLoading}>
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h2>Crear cuenta</h2>
@@ -37,6 +60,7 @@ export function RegisterScreen({ onRegister, onBack }: RegisterScreenProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
@@ -48,6 +72,7 @@ export function RegisterScreen({ onRegister, onBack }: RegisterScreenProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
@@ -59,6 +84,7 @@ export function RegisterScreen({ onRegister, onBack }: RegisterScreenProps) {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
@@ -70,21 +96,28 @@ export function RegisterScreen({ onRegister, onBack }: RegisterScreenProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="pl-10 h-12 rounded-2xl border-gray-300"
+              disabled={isLoading}
             />
           </div>
 
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
           <Button
-            onClick={onRegister}
-            className="w-full h-12 bg-[#4C7BF3] hover:bg-[#3a5fc7] text-white rounded-2xl mt-6"
+            onClick={handleRegister}
+            style={{ backgroundColor: goldColor }}
+            className="w-full h-12 hover:bg-opacity-90 text-black rounded-2xl mt-6"
+            disabled={isLoading}
           >
-            Crear cuenta
+            {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
           </Button>
 
           <div className="text-center pt-4">
             <span className="text-gray-600">¿Ya tienes cuenta? </span>
             <button
               onClick={onBack}
-              className="text-[#4C7BF3] hover:underline"
+              style={{ color: goldColor }}
+              className="hover:underline"
+              disabled={isLoading}
             >
               Inicia sesión
             </button>

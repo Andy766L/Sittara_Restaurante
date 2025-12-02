@@ -10,10 +10,10 @@ class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
 
   @override
-  _ExploreScreenState createState() => _ExploreScreenState();
+  ExploreScreenState createState() => ExploreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen> {
+class ExploreScreenState extends State<ExploreScreen> {
   _ExploreView _activeView = _ExploreView.list;
   final TextEditingController _searchController = TextEditingController();
   List<Restaurant> _filteredRestaurants = [];
@@ -55,49 +55,57 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildHeader(),
-            _buildContent(),
-          ],
+          children: [_buildHeader(), _buildContent()],
         ),
       ),
-      // Placeholder for BottomNavigation
     );
   }
 
   Widget _buildHeader() {
+    final theme = Theme.of(context);
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Explorar',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
+          Text('Explora', style: theme.textTheme.displaySmall),
+          const SizedBox(height: 24),
           TextField(
             controller: _searchController,
+            style: theme.textTheme.bodyLarge,
             decoration: InputDecoration(
-              hintText: 'Buscar restaurantes...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
+              hintText: 'Busca tu proximo restaurante...',
+              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurface.withAlpha(
+                  (255 * 0.5).round(),
+                ),
+              ),
+              prefixIcon: Icon(
+                Icons.search,
+                color: theme.colorScheme.primary,
+                size: 28,
+              ),
               filled: true,
-              fillColor: Colors.grey[200],
+              fillColor: theme.colorScheme.surface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.0),
                 borderSide: BorderSide.none,
               ),
-              contentPadding: const EdgeInsets.symmetric(vertical: 16.0),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 20.0,
+                horizontal: 16,
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           ToggleButtons(
-            isSelected: [_activeView == _ExploreView.list, _activeView == _ExploreView.map],
+            isSelected: [
+              _activeView == _ExploreView.list,
+              _activeView == _ExploreView.map,
+            ],
             onPressed: (index) {
               setState(() {
                 _activeView = index == 0 ? _ExploreView.list : _ExploreView.map;
@@ -105,12 +113,32 @@ class _ExploreScreenState extends State<ExploreScreen> {
             },
             borderRadius: BorderRadius.circular(30.0),
             selectedColor: Colors.white,
-            fillColor: const Color(0xFF4C7BF3),
-            color: Colors.grey.shade700,
-            constraints: BoxConstraints(minHeight: 40.0, minWidth: (MediaQuery.of(context).size.width - 36) / 2),
-            children: const [
-              Text('Lista'),
-              Text('Mapa'),
+            fillColor: theme.colorScheme.primary,
+            color: theme.colorScheme.primary,
+            splashColor: theme.colorScheme.primary.withAlpha(
+              (255 * 0.12).round(),
+            ),
+            constraints: BoxConstraints(
+              minHeight: 50.0,
+              minWidth: (MediaQuery.of(context).size.width - 52) / 2,
+            ),
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.list),
+                  SizedBox(width: 8),
+                  Text('Lista'),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.map_outlined),
+                  SizedBox(width: 8),
+                  Text('Mapa'),
+                ],
+              ),
             ],
           ),
         ],
@@ -135,12 +163,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
     }
     return ListView.builder(
       key: const ValueKey('list'),
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       itemCount: _filteredRestaurants.length,
       itemBuilder: (context, index) {
         final restaurant = _filteredRestaurants[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: 24.0),
           child: RestaurantCard(
             restaurant: restaurant,
             onTap: () => _onNavigateToDetail(restaurant),
@@ -151,57 +179,63 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   Widget _buildMapView() {
-     return Stack(
+    return Stack(
       key: const ValueKey('map'),
       fit: StackFit.expand,
       children: [
         Image.network(
-          'https://images.unsplash.com/photo-1694953592902-46d9b0d0c19d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZXN0YXVyYW50JTIwbG9jYXRpb24lMjBtYXB8ZW58MXx8fHwxNjM4NTAxNzN8MA&ixlib=rb-4.1.0&q=80&w=1080',
+          'https://maps.googleapis.com/maps/api/staticmap?center=40.714728,-73.998672&zoom=14&size=600x800&maptype=roadmap&style=feature:all|element:labels|visibility:off&style=feature:road|element:geometry|color:0x000000&style=feature:water|element:geometry|color:0x333333&key=YOUR_API_KEY',
           fit: BoxFit.cover,
-           errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.map, size: 100, color: Colors.grey)),
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: const Center(
+              child: Icon(Icons.map, size: 100, color: Colors.grey),
+            ),
+          ),
         ),
         // Simulated map markers
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.15,
-          left: MediaQuery.of(context).size.width * 0.2,
-          child: _buildMapMarker(),
-        ),
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.3,
-          right: MediaQuery.of(context).size.width * 0.25,
-          child: _buildMapMarker(),
-        ),
+        ...mockRestaurants
+            .take(3)
+            .map(
+              (r) => Positioned(
+                top: (r.id.hashCode % 50) + 10,
+                left: (r.id.hashCode % 60) + 10,
+                child: _buildMapMarker(r),
+              ),
+            ),
         // Floating restaurant card
         Positioned(
           bottom: 24,
           left: 16,
           right: 16,
           child: _buildFloatingMapCard(mockRestaurants.first),
-        )
+        ),
       ],
     );
   }
 
-  Widget _buildMapMarker() {
+  Widget _buildMapMarker(Restaurant restaurant) {
     return FloatingActionButton(
-      onPressed: () {},
-      backgroundColor: const Color(0xFF4C7BF3),
+      onPressed: () => _onNavigateToDetail(restaurant),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       child: const Icon(Icons.location_on, color: Colors.white),
     );
   }
-  
+
   Widget _buildFloatingMapCard(Restaurant restaurant) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => _onNavigateToDetail(restaurant),
       child: Card(
-         clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 8,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        elevation: 12,
+        shadowColor: Colors.black.withAlpha((255 * 0.3).round()),
         child: Row(
           children: [
             SizedBox(
-              width: 96,
-              height: 96,
+              width: 112,
+              height: 112,
               child: Image.network(restaurant.image, fit: BoxFit.cover),
             ),
             Expanded(
@@ -210,21 +244,30 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(restaurant.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(restaurant.cuisine, style: Theme.of(context).textTheme.bodySmall),
-                    const SizedBox(height: 4),
+                    Text(restaurant.name, style: theme.textTheme.titleLarge),
+                    const SizedBox(height: 8),
+                    Text(restaurant.cuisine, style: theme.textTheme.bodyMedium),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        Icon(
+                          Icons.star,
+                          color: theme.colorScheme.secondary,
+                          size: 20,
+                        ),
                         const SizedBox(width: 4),
-                        Text(restaurant.rating.toString(), style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          restaurant.rating.toString(),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

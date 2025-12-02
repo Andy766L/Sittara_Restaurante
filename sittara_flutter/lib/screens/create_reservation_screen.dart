@@ -9,10 +9,10 @@ class CreateReservationScreen extends StatefulWidget {
   const CreateReservationScreen({super.key, required this.restaurant});
 
   @override
-  _CreateReservationScreenState createState() => _CreateReservationScreenState();
+  CreateReservationScreenState createState() => CreateReservationScreenState();
 }
 
-class _CreateReservationScreenState extends State<CreateReservationScreen> {
+class CreateReservationScreenState extends State<CreateReservationScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String _selectedTime = '20:00';
@@ -20,8 +20,19 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
   bool _showSuccess = false;
 
   final List<String> _times = [
-    '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-    '19:00', '19:30', '20:00', '20:30', '21:00', '21:30', '22:00'
+    '12:00',
+    '12:30',
+    '13:00',
+    '13:30',
+    '14:00',
+    '14:30',
+    '19:00',
+    '19:30',
+    '20:00',
+    '20:30',
+    '21:00',
+    '21:30',
+    '22:00',
   ];
 
   @override
@@ -50,16 +61,10 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
     }
     return _buildFormView(context);
   }
-  
-  Widget _buildFormView(BuildContext context) {
-    const primaryColor = Color(0xFF4C7BF3);
 
+  Widget _buildFormView(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reservar mesa'),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
+      appBar: AppBar(title: const Text('Reservar mesa'), elevation: 1),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -69,7 +74,7 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Theme.of(context).colorScheme.surface.withAlpha(100),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -77,22 +82,33 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
                 children: [
                   Text(
                     widget.restaurant.name,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  Text(widget.restaurant.address, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
+                  Text(
+                    widget.restaurant.address,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
             // Date Selection
-            _buildSectionHeader(context, Icons.calendar_today_outlined, 'Selecciona una fecha'),
+            _buildSectionHeader(
+              context,
+              Icons.calendar_today_outlined,
+              'Selecciona una fecha',
+            ),
             const SizedBox(height: 8),
             Container(
-               padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Theme.of(context).colorScheme.surface.withAlpha(100),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: TableCalendar(
@@ -107,16 +123,29 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
                   });
                 },
                 calendarStyle: CalendarStyle(
-                  todayDecoration: BoxDecoration(color: primaryColor.withOpacity(0.5), shape: BoxShape.circle),
-                  selectedDecoration: const BoxDecoration(color: primaryColor, shape: BoxShape.circle),
+                  todayDecoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withAlpha(128),
+                    shape: BoxShape.circle,
+                  ),
+                  selectedDecoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    shape: BoxShape.circle,
+                  ),
                 ),
-                headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
+                headerStyle: const HeaderStyle(
+                  formatButtonVisible: false,
+                  titleCentered: true,
+                ),
               ),
             ),
             const SizedBox(height: 24),
 
             // Time Selection
-            _buildSectionHeader(context, Icons.access_time_outlined, 'Selecciona una hora'),
+            _buildSectionHeader(
+              context,
+              Icons.access_time_outlined,
+              'Selecciona una hora',
+            ),
             const SizedBox(height: 8),
             GridView.builder(
               shrinkWrap: true,
@@ -134,91 +163,127 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
                 return ElevatedButton(
                   onPressed: () => setState(() => _selectedTime = time),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isSelected ? primaryColor : Colors.grey.shade100,
-                    foregroundColor: isSelected ? Colors.white : Colors.black87,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    backgroundColor: isSelected
+                        ? Theme.of(context).primaryColor
+                        : Theme.of(context).colorScheme.surface.withAlpha(100),
+                    foregroundColor: isSelected
+                        ? Colors.white
+                        : Theme.of(context).textTheme.bodyLarge?.color,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(time),
                 );
               },
             ),
-             const SizedBox(height: 24),
+            const SizedBox(height: 24),
 
             // Guest Counter
-             _buildSectionHeader(context, Icons.people_outline, 'Número de personas'),
+            _buildSectionHeader(
+              context,
+              Icons.people_outline,
+              'Número de personas',
+            ),
             const SizedBox(height: 8),
-             Container(
+            Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withAlpha(100),
                 borderRadius: BorderRadius.circular(16),
               ),
-               child: Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                 children: [
-                   IconButton(
+                children: [
+                  IconButton(
                     icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: () => setState(() => _guests = _guests > 1 ? _guests - 1 : 1),
-                    color: primaryColor,
+                    onPressed: () =>
+                        setState(() => _guests = _guests > 1 ? _guests - 1 : 1),
+                    color: Theme.of(context).primaryColor,
                   ),
-                   Text('$_guests', style: Theme.of(context).textTheme.titleLarge),
-                   IconButton(
+                  Text(
+                    '$_guests',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  IconButton(
                     icon: const Icon(Icons.add_circle_outline),
-                    onPressed: () => setState(() => _guests = _guests < 20 ? _guests + 1 : 20),
-                     color: primaryColor,
+                    onPressed: () => setState(
+                      () => _guests = _guests < 20 ? _guests + 1 : 20,
+                    ),
+                    color: Theme.of(context).primaryColor,
                   ),
-                 ],
-               ),
-             ),
-             const SizedBox(height: 32),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
 
             // Confirm Button
-             SizedBox(
+            SizedBox(
               width: double.infinity,
-               child: ElevatedButton(
+              child: ElevatedButton(
                 onPressed: _handleConfirm,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                child: const Text('Confirmar reserva', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                           ),
-             ),
+                child: const Text(
+                  'Confirmar reserva',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-  
-  Widget _buildSectionHeader(BuildContext context, IconData icon, String title) {
+
+  Widget _buildSectionHeader(
+    BuildContext context,
+    IconData icon,
+    String title,
+  ) {
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF4C7BF3), size: 20),
+        Icon(icon, color: Theme.of(context).primaryColor, size: 20),
         const SizedBox(width: 8),
-        Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+        Text(
+          title,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
 
   Widget _buildSuccessView(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 60,
-              backgroundColor: Colors.green.shade100,
-              child: Icon(Icons.check_circle_outline, size: 60, color: Colors.green.shade700),
+              backgroundColor: Colors.green.withAlpha(50),
+              child: Icon(
+                Icons.check_circle_outline,
+                size: 60,
+                color: Colors.green.shade700,
+              ),
             ),
             const SizedBox(height: 32),
             Text(
               '¡Reserva confirmada!',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -226,7 +291,9 @@ class _CreateReservationScreenState extends State<CreateReservationScreen> {
               child: Text(
                 'Tu mesa en ${widget.restaurant.name} ha sido reservada exitosamente.',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).textTheme.bodySmall?.color,
+                ),
               ),
             ),
           ],

@@ -1,6 +1,5 @@
 import { ArrowLeft, Calendar, Clock, Users, MapPin, Navigation } from 'lucide-react';
 import { Reservation } from '../../types';
-import { restaurants } from '../../data/mockData';
 import { Button } from '../ui/button';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
@@ -10,7 +9,8 @@ interface ReservationDetailScreenProps {
 }
 
 export function ReservationDetailScreen({ reservation, onBack }: ReservationDetailScreenProps) {
-  const restaurant = restaurants.find(r => r.id === reservation.restaurantId);
+  const restaurant = reservation.restaurants; // Get restaurant from nested object
+  const goldColor = '#D4AF37';
 
   const statusColors = {
     pending: 'bg-orange-100 text-orange-700',
@@ -54,7 +54,7 @@ export function ReservationDetailScreen({ reservation, onBack }: ReservationDeta
 
           <div className="space-y-4 mb-6">
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
-              <div className="bg-[#4C7BF3] p-3 rounded-full">
+              <div style={{ backgroundColor: goldColor }} className="p-3 rounded-full">
                 <Calendar className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -71,7 +71,7 @@ export function ReservationDetailScreen({ reservation, onBack }: ReservationDeta
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
-              <div className="bg-[#4C7BF3] p-3 rounded-full">
+              <div style={{ backgroundColor: goldColor }} className="p-3 rounded-full">
                 <Clock className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -81,7 +81,7 @@ export function ReservationDetailScreen({ reservation, onBack }: ReservationDeta
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl">
-              <div className="bg-[#4C7BF3] p-3 rounded-full">
+              <div style={{ backgroundColor: goldColor }} className="p-3 rounded-full">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -101,10 +101,10 @@ export function ReservationDetailScreen({ reservation, onBack }: ReservationDeta
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <MapPin className="w-12 h-12 text-[#4C7BF3]" />
+                  <MapPin style={{ color: goldColor }} className="w-12 h-12" />
                 </div>
               </div>
-              <Button className="w-full mt-3 h-12 bg-white border-2 border-[#4C7BF3] text-[#4C7BF3] hover:bg-[#4C7BF3] hover:text-white rounded-2xl">
+              <Button style={{ borderColor: goldColor, color: goldColor }} className="w-full mt-3 h-12 bg-white border-2 hover:text-white rounded-2xl">
                 <Navigation className="w-5 h-5 mr-2" />
                 Ver indicaciones
               </Button>

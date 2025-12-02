@@ -13,83 +13,113 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(24.0),
         ),
-        elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        elevation: 8,
+        shadowColor: Colors.black.withAlpha((255 * 0.2).round()),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 192,
-              width: double.infinity,
-              child: Image.network(
-                restaurant.image,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(
-                    child: Icon(
-                      Icons.restaurant_menu,
-                      color: Colors.grey,
-                      size: 48,
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    restaurant.name,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+            Stack(
+              children: [
+                SizedBox(
+                  height: 220,
+                  width: double.infinity,
+                  child: Image.network(
+                    restaurant.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: theme.colorScheme.surface,
+                        child: const Center(
+                          child: Icon(
+                            Icons.restaurant_menu,
+                            color: Colors.grey,
+                            size: 48,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Container(
+                  height: 220,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withAlpha((255 * 0.7).round()),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
+                ),
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 4),
                       Text(
-                        restaurant.rating.toString(),
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        restaurant.name,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      const SizedBox(width: 8),
                       Text(
-                        '• ${restaurant.cuisine}',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade600,
+                        restaurant.cuisine,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: Colors.white.withAlpha((255 * 0.9).round()),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: theme.colorScheme.secondary,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${restaurant.rating} (${restaurant.reviews} reviews)',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                   Row(
                     children: [
                       Icon(
                         Icons.location_on_outlined,
-                        color: Colors.grey.shade700,
+                        color: theme.textTheme.bodySmall?.color,
                         size: 20,
                       ),
                       const SizedBox(width: 4),
-                      Expanded(
+                      SizedBox(
+                        width: 100,
                         child: Text(
                           restaurant.address,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade700,
-                          ),
+                          style: theme.textTheme.bodyMedium,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),

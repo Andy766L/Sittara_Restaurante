@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { Search, MapPin } from 'lucide-react';
-import { restaurants } from '../../data/mockData';
+import { useState, useEffect } from 'react';
+import { Search, MapPin, List } from 'lucide-react';
+import { getRestaurants } from '../../services/api';
+import { Restaurant } from '../../types';
 import { RestaurantCard } from '../RestaurantCard';
 import { BottomNavigation } from '../BottomNavigation';
 import { Input } from '../ui/input';
@@ -11,8 +12,17 @@ interface ExploreScreenProps {
 }
 
 export function ExploreScreen({ onNavigate }: ExploreScreenProps) {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [activeTab, setActiveTab] = useState<'list' | 'map'>('list');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    async function fetchRestaurants() {
+      const data = await getRestaurants();
+      setRestaurants(data);
+    }
+    fetchRestaurants();
+  }, []);
 
   const filteredRestaurants = restaurants.filter(r => 
     r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -20,48 +30,50 @@ export function ExploreScreen({ onNavigate }: ExploreScreenProps) {
   );
 
   return (
-    <div className="h-full bg-[#F4F4F4] flex flex-col">
-      <div className="bg-white p-4 border-b">
-        <h2 className="mb-4">Explorar</h2>
+    <div className="h-full bg-background flex flex-col">
+      <div className="p-6">
+        <h1 className="text-3xl font-bold mb-6">Explora Restaurantes</h1>
         
-        <div className="relative mb-4">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400" />
           <Input
             type="text"
-            placeholder="Buscar restaurantes..."
+            placeholder="Busca por nombre o tipo de cocina"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 h-12 rounded-2xl border-gray-300"
+            className="pl-12 h-14 text-lg rounded-2xl border-2 border-surface focus:border-primary transition-colors"
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex justify-center gap-4 mb-4">
           <button
             onClick={() => setActiveTab('list')}
-            className={`flex-1 py-2 px-4 rounded-full transition-colors ${
+            className={`flex items-center gap-2 py-3 px-6 rounded-full text-lg font-semibold transition-all duration-300 ${
               activeTab === 'list'
-                ? 'bg-[#4C7BF3] text-white'
-                : 'bg-gray-100 text-gray-700'
+                ? 'bg-primary text-white shadow-lg'
+                : 'bg-white text-text-secondary hover:bg-surface'
             }`}
           >
-            Lista
+            <List className="w-6 h-6" />
+            <span>Lista</span>
           </button>
           <button
             onClick={() => setActiveTab('map')}
-            className={`flex-1 py-2 px-4 rounded-full transition-colors ${
+            className={`flex items-center gap-2 py-3 px-6 rounded-full text-lg font-semibold transition-all duration-300 ${
               activeTab === 'map'
-                ? 'bg-[#4C7BF3] text-white'
-                : 'bg-gray-100 text-gray-700'
+                ? 'bg-primary text-white shadow-lg'
+                : 'bg-white text-text-secondary hover:bg-surface'
             }`}
           >
-            Mapa
+            <MapPin className="w-6 h-6" />
+            <span>Mapa</span>
           </button>
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto pb-20">
+      <div className="flex-1 overflow-auto pb-24">
         {activeTab === 'list' ? (
-          <div className="p-4 grid grid-cols-1 gap-4">
+          <div className="px-6 grid grid-cols-1 gap-6">
             {filteredRestaurants.map((restaurant) => (
               <RestaurantCard
                 key={restaurant.id}
@@ -73,52 +85,26 @@ export function ExploreScreen({ onNavigate }: ExploreScreenProps) {
         ) : (
           <div className="relative h-full">
             <ImageWithFallback 
-              src="https://images.unsplash.com/photo-1694953592902-46d9b0d0c19d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZXN0YXVyYW50JTIwbG9jYXRpb24lMjBtYXB8ZW58MXx8fHwxNjM4NTAxNzN8MA&ixlib=rb-4.1.0&q=80&w=1080"
+              src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
               alt="Mapa"
               className="w-full h-full object-cover"
             />
             
             {/* Marcadores simulados en el mapa */}
-            <div className="absolute top-1/4 left-1/3 transform -translate-x-1/2">
-              <button className="bg-[#4C7BF3] text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
-                <MapPin className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="absolute top-1/2 right-1/4 transform -translate-x-1/2">
-              <button className="bg-[#4C7BF3] text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
-                <MapPin className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2">
-              <button className="bg-[#4C7BF3] text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
-                <MapPin className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Card flotante */}
-            <div className="absolute bottom-24 left-4 right-4">
+            {restaurants.slice(0, 3).map((restaurant, i) => (
               <div 
-                onClick={() => onNavigate('restaurant-detail', restaurants[0])}
-                className="bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl transition-shadow"
+                key={i}
+                className="absolute"
+                style={{ top: `${20 + i * 25}%`, left: `${25 + i * 15}%`}}
               >
-                <div className="flex">
-                  <div className="w-24 h-24 flex-shrink-0">
-                    <ImageWithFallback 
-                      src={restaurants[0].image} 
-                      alt={restaurants[0].name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 p-3">
-                    <h3 className="text-sm mb-1">{restaurants[0].name}</h3>
-                    <p className="text-xs text-gray-600 mb-1">{restaurants[0].cuisine}</p>
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-700">⭐ {restaurants[0].rating}</span>
-                    </div>
-                  </div>
-                </div>
+                <button 
+                  onClick={() => onNavigate('restaurant-detail', restaurant)}
+                  className="bg-primary text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform border-4 border-white"
+                >
+                  <MapPin className="w-8 h-8" />
+                </button>
               </div>
-            </div>
+            ))}
           </div>
         )}
       </div>

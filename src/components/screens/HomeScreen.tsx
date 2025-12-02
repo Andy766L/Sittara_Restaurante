@@ -1,5 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { restaurants, mockUser } from '../../data/mockData';
+import { getRestaurants } from '../../services/api';
+import { supabase } from '../../lib/supabaseClient';
+import { Restaurant } from '../../types';
+import { User } from '@supabase/supabase-js';
 import { RestaurantCard } from '../RestaurantCard';
 import { BottomNavigation } from '../BottomNavigation';
 
@@ -9,7 +13,32 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onNavigate, onShowNotification }: HomeScreenProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      
+      const restaurantData = await getRestaurants();
+      setRestaurants(restaurantData);
+    };
+
+    fetchData();
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
   const featuredRestaurants = restaurants.slice(0, 4);
+  const goldColor = '#D4AF37';
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Guest';
 
   return (
     <div className="h-full bg-[#F4F4F4] flex flex-col">
@@ -17,7 +46,7 @@ export function HomeScreen({ onNavigate, onShowNotification }: HomeScreenProps) 
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">Hola,</p>
-            <h2>{mockUser.name}</h2>
+            <h2>{userName}</h2>
           </div>
           <button 
             onClick={onShowNotification}
@@ -31,14 +60,14 @@ export function HomeScreen({ onNavigate, onShowNotification }: HomeScreenProps) 
 
       <div className="flex-1 overflow-auto pb-20">
         <div className="p-4">
-          <div className="bg-gradient-to-r from-[#4C7BF3] to-[#3a5fc7] rounded-2xl p-6 mb-6 text-white">
-            <h2 className="mb-2 text-white">Descubre nuevos sabores</h2>
-            <p className="text-white/90 mb-4">
+          <div style={{ backgroundColor: goldColor }} className="bg-gradient-to-r rounded-2xl p-6 mb-6 text-black">
+            <h2 className="mb-2 text-black">Descubre nuevos sabores</h2>
+            <p className="text-black/90 mb-4">
               Reserva en los mejores restaurantes de tu ciudad
             </p>
             <button 
               onClick={() => onNavigate('explore')}
-              className="bg-white text-[#4C7BF3] px-6 py-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="bg-white text-black px-6 py-2 rounded-full hover:bg-gray-100 transition-colors"
             >
               Explorar ahora
             </button>
@@ -48,7 +77,8 @@ export function HomeScreen({ onNavigate, onShowNotification }: HomeScreenProps) 
             <h2>Destacados</h2>
             <button 
               onClick={() => onNavigate('explore')}
-              className="text-sm text-[#4C7BF3] hover:underline"
+              style={{ color: goldColor }}
+              className="text-sm hover:underline"
             >
               Ver todos
             </button>

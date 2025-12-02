@@ -1,7 +1,10 @@
+import { useState, useEffect } from 'react';
 import { ChevronRight, Bell, Lock, HelpCircle, LogOut } from 'lucide-react';
-import { mockUser } from '../../data/mockData';
+import { supabase } from '../../lib/supabaseClient';
+import { signOut } from '../../services/api';
 import { BottomNavigation } from '../BottomNavigation';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { User } from '@supabase/supabase-js';
 
 interface ProfileScreenProps {
   onNavigate: (screen: string, data?: any) => void;
@@ -9,6 +12,30 @@ interface ProfileScreenProps {
 }
 
 export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
+
+    fetchUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    onLogout();
+  };
+  
   const menuItems = [
     {
       icon: Bell,
@@ -29,6 +56,12 @@ export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
     }
   ];
 
+  const goldColor = '#D4AF37';
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'Guest';
+  const userEmail = user?.email || '';
+  const userAvatar = user?.user_metadata?.avatar_url || 'https://www.gravatar.com/avatar/?d=mp';
+  const userPhone = user?.user_metadata?.phone || 'No disponible';
+
   return (
     <div className="h-full bg-[#F4F4F4] flex flex-col">
       <div className="bg-white p-4 border-b">
@@ -39,19 +72,20 @@ export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
         <div className="bg-white p-6 mb-4">
           <div className="flex items-center gap-4 mb-6">
             <ImageWithFallback 
-              src={mockUser.avatar} 
-              alt={mockUser.name}
+              src={userAvatar} 
+              alt={userName}
               className="w-20 h-20 rounded-full object-cover"
             />
             <div className="flex-1">
-              <h2 className="mb-1">{mockUser.name}</h2>
-              <p className="text-sm text-gray-600">{mockUser.email}</p>
+              <h2 className="mb-1">{userName}</h2>
+              <p className="text-sm text-gray-600">{userEmail}</p>
             </div>
           </div>
 
           <button
             onClick={() => onNavigate('edit-profile')}
-            className="w-full py-3 bg-[#4C7BF3] text-white rounded-2xl hover:bg-[#3a5fc7] transition-colors"
+            style={{ backgroundColor: goldColor }}
+            className="w-full py-3 text-black rounded-2xl hover:bg-opacity-90 transition-colors"
           >
             Editar perfil
           </button>
@@ -62,11 +96,11 @@ export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
           <div className="space-y-4 pb-4">
             <div className="flex items-center justify-between py-3 border-b">
               <span className="text-gray-600">Correo electrónico</span>
-              <span>{mockUser.email}</span>
+              <span>{userEmail}</span>
             </div>
             <div className="flex items-center justify-between py-3 border-b">
               <span className="text-gray-600">Teléfono</span>
-              <span>{mockUser.phone}</span>
+              <span>{userPhone}</span>
             </div>
           </div>
         </div>
@@ -87,9 +121,9 @@ export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
                     <span>{item.label}</span>
                   </div>
                   {item.hasToggle ? (
-                    <div className={`w-12 h-6 rounded-full transition-colors ${
-                      item.toggleValue ? 'bg-[#4C7BF3]' : 'bg-gray-300'
-                    }`}>
+                    <div 
+                      style={{ backgroundColor: item.toggleValue ? goldColor : '' }}
+                      className={`w-12 h-6 rounded-full transition-colors ${!item.toggleValue && 'bg-gray-300'}`}>
                       <div className={`w-5 h-5 bg-white rounded-full transition-transform transform ${
                         item.toggleValue ? 'translate-x-6' : 'translate-x-0.5'
                       } mt-0.5`} />
@@ -105,7 +139,7 @@ export function ProfileScreen({ onNavigate, onLogout }: ProfileScreenProps) {
 
         <div className="px-4">
           <button
-            onClick={onLogout}
+            onClick={handleSignOut}
             className="w-full flex items-center justify-center gap-3 py-4 bg-white text-red-500 rounded-2xl hover:bg-red-50 transition-colors"
           >
             <LogOut className="w-5 h-5" />

@@ -7,10 +7,10 @@ class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -38,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     try {
       await authService.register(
         name: _nameController.text,
@@ -46,29 +46,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
         phone: _phoneController.text,
         password: _passwordController.text,
       );
-      
+
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const MainScreen()),
           (Route<dynamic> route) => false,
         );
       }
-
     } catch (e) {
-       if (mounted) {
-         ScaffoldMessenger.of(context).showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error en el registro: $e'),
             backgroundColor: Colors.red,
           ),
         );
-       }
+      }
     } finally {
-       if (mounted) {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
-       }
+      }
     }
   }
 
@@ -87,12 +86,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF4C7BF3);
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 1,
         title: const Text('Crear cuenta'),
         leading: IconButton(
@@ -110,16 +108,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Text(
                 'Completa tus datos para registrarte',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
+                ),
               ),
               const SizedBox(height: 32),
               _buildTextField(
+                context: context,
                 controller: _nameController,
                 hintText: 'Nombre completo',
                 icon: Icons.person_outline,
               ),
               const SizedBox(height: 16),
               _buildTextField(
+                context: context,
                 controller: _emailController,
                 hintText: 'Correo electrónico',
                 icon: Icons.mail_outline,
@@ -127,6 +129,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 16),
               _buildTextField(
+                context: context,
                 controller: _phoneController,
                 hintText: 'Teléfono',
                 icon: Icons.phone_outlined,
@@ -138,16 +141,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   hintText: 'Contraseña',
-                  prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade500),
+                  prefixIcon: Icon(
+                    Icons.lock_outline,
+                    color: theme.iconTheme.color,
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                       color: Colors.grey.shade500,
+                      _isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: theme.iconTheme.color,
                     ),
-                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                    onPressed: () => setState(
+                      () => _isPasswordVisible = !_isPasswordVisible,
+                    ),
                   ),
-                   filled: true,
-                  fillColor: Colors.grey.shade100,
+                  filled: true,
+                  fillColor: theme.colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide.none,
@@ -159,17 +169,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 onPressed: _isLoading ? null : _handleRegister,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: primaryColor,
+                  backgroundColor: theme.primaryColor,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: _isLoading
                     ? const SizedBox(
                         height: 24,
                         width: 24,
-                        child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          color: Colors.white,
+                        ),
                       )
-                    : const Text('Crear cuenta', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    : const Text(
+                        'Crear cuenta',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
               const SizedBox(height: 24),
               Row(
@@ -178,10 +199,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const Text('¿Ya tienes cuenta?'),
                   TextButton(
                     onPressed: _navigateToLogin,
-                    child: const Text('Inicia sesión', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Inicia sesión',
+                      style: TextStyle(
+                        color: theme.primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -190,19 +217,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController controller,
     required String hintText,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: Icon(icon, color: Colors.grey.shade500),
+        prefixIcon: Icon(icon, color: theme.iconTheme.color),
         filled: true,
-        fillColor: Colors.grey.shade100,
+        fillColor: theme.colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.0),
           borderSide: BorderSide.none,

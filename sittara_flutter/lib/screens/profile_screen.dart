@@ -8,10 +8,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   bool _notificationsEnabled = true;
 
   @override
@@ -26,12 +26,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: Center(child: Text('No se ha iniciado sesión.')),
       );
     }
-    
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Perfil'),
-        backgroundColor: Colors.white,
         elevation: 1,
         automaticallyImplyLeading: false,
       ),
@@ -59,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -67,12 +66,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           CircleAvatar(
             radius: 50,
             backgroundImage: NetworkImage(user.avatar),
-            backgroundColor: Colors.grey.shade200,
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withAlpha(50),
           ),
           const SizedBox(height: 16),
-          Text(user.name, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            user.name,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
-          Text(user.email, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600)),
+          Text(
+            user.email,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -80,9 +91,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {}, // Placeholder
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: const Color(0xFF4C7BF3),
+                backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
               child: const Text('Editar perfil'),
             ),
@@ -96,29 +109,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Información personal', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            'Información personal',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
-          _buildInfoRow('Correo electrónico', user.email),
+          _buildInfoRow(context, 'Correo electrónico', user.email),
           const Divider(),
-          _buildInfoRow('Teléfono', user.phone),
+          _buildInfoRow(context, 'Teléfono', user.phone),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String title, String value) {
+  Widget _buildInfoRow(BuildContext context, String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: TextStyle(color: Colors.grey.shade600)),
+          Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+          ),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
@@ -128,27 +151,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildSettingsCard(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-           Padding(
-             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-             child: Text('Ajustes', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-           ),
-           SwitchListTile(
-              secondary: const Icon(Icons.notifications_outlined),
-              title: const Text('Notificaciones'),
-              value: _notificationsEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  _notificationsEnabled = value;
-                });
-              },
-              activeThumbColor: const Color(0xFF4C7BF3),
-           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: Text(
+              'Ajustes',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.notifications_outlined),
+            title: const Text('Notificaciones'),
+            value: _notificationsEnabled,
+            onChanged: (bool value) {
+              setState(() {
+                _notificationsEnabled = value;
+              });
+            },
+            activeThumbColor: Theme.of(context).primaryColor,
+          ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.lock_outline),
@@ -168,12 +196,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-   Widget _buildLogoutButton(BuildContext context, AuthService authService) {
+  Widget _buildLogoutButton(BuildContext context, AuthService authService) {
     return TextButton.icon(
       onPressed: () async {
         await authService.logout();
-        if(mounted) {
-           Navigator.of(context).pushAndRemoveUntil(
+        if (context.mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const LoginScreen()),
             (Route<dynamic> route) => false, // Remove all previous routes
           );
@@ -183,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       label: const Text('Cerrar sesión', style: TextStyle(color: Colors.red)),
       style: TextButton.styleFrom(
         padding: const EdgeInsets.all(16),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );

@@ -9,10 +9,10 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
@@ -73,14 +73,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const primaryColor = Color(0xFF4C7BF3);
+    const primaryColor = Color(0xFFD4AF37);
+    const darkTextColor = Color(0xFF3D3D3D);
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 48.0,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,7 +93,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: primaryColor,
-                  child: const Icon(Icons.restaurant_menu, size: 50, color: Colors.white),
+                  child: const Icon(
+                    Icons.restaurant_menu,
+                    size: 50,
+                    color: darkTextColor,
+                  ),
                 ),
                 const SizedBox(height: 32),
 
@@ -97,13 +105,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'Bienvenido a Sittara',
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Inicia sesión para comenzar a reservar',
                   textAlign: TextAlign.center,
-                  style: theme.textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                  ),
                 ),
                 const SizedBox(height: 40),
 
@@ -113,7 +125,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Correo electrónico',
-                    prefixIcon: Icon(Icons.mail_outline, color: Colors.grey.shade500),
+                    prefixIcon: Icon(
+                      Icons.mail_outline,
+                      color: Colors.grey.shade500,
+                    ),
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: OutlineInputBorder(
@@ -130,10 +145,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     hintText: 'Contraseña',
-                    prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade500),
+                    prefixIcon: Icon(
+                      Icons.lock_outline,
+                      color: Colors.grey.shade500,
+                    ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                        _isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: Colors.grey.shade500,
                       ),
                       onPressed: () {
@@ -157,7 +177,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: _navigateToForgotPassword,
-                    child: const Text('¿Olvidaste tu contraseña?', style: TextStyle(color: primaryColor)),
+                    child: const Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(color: primaryColor),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -168,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: primaryColor,
-                    foregroundColor: Colors.white,
+                    foregroundColor: darkTextColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -177,9 +200,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ? const SizedBox(
                           height: 24,
                           width: 24,
-                          child: CircularProgressIndicator(strokeWidth: 3, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            color: darkTextColor,
+                          ),
                         )
-                      : const Text('Iniciar sesión', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      : const Text(
+                          'Iniciar sesión',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 32),
 
@@ -190,10 +222,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text('¿No tienes cuenta?'),
                     TextButton(
                       onPressed: _navigateToRegister,
-                      child: const Text('Regístrate', style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Regístrate',
+                        style: TextStyle(
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),

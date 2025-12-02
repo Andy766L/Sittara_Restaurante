@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Star, MapPin, Clock, Phone, Plus } from 'lucide-react';
-import { Restaurant } from '../../types';
-import { reviews } from '../../data/mockData';
+import { Restaurant, Review } from '../../types';
+import { getReviewsForRestaurant } from '../../services/api';
 import { ReviewCard } from '../ReviewCard';
 import { Button } from '../ui/button';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
@@ -12,7 +13,15 @@ interface RestaurantDetailScreenProps {
 }
 
 export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: RestaurantDetailScreenProps) {
-  const restaurantReviews = reviews.filter(r => r.restaurantId === restaurant.id);
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  useEffect(() => {
+    async function fetchReviews() {
+      const data = await getReviewsForRestaurant(restaurant.id);
+      setReviews(data);
+    }
+    fetchReviews();
+  }, [restaurant.id]);
 
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -32,6 +41,8 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
       </div>
     );
   };
+  
+  const goldColor = '#D4AF37';
 
   return (
     <div className="h-full bg-[#F4F4F4] flex flex-col">
@@ -57,20 +68,21 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
           <div className="flex items-center gap-2 mb-6">
             {renderStars(restaurant.rating)}
             <span className="ml-2">
-              {restaurant.rating} ({restaurantReviews.length} reseñas)
+              {restaurant.rating} ({reviews.length} reseñas)
             </span>
           </div>
 
           <Button
             onClick={() => onNavigate('create-reservation', restaurant)}
-            className="w-full h-12 bg-[#4C7BF3] hover:bg-[#3a5fc7] text-white rounded-2xl mb-6"
+            style={{ backgroundColor: goldColor }}
+            className="w-full h-12 hover:bg-opacity-90 text-black rounded-2xl mb-6"
           >
             Reservar mesa
           </Button>
 
           <div className="space-y-4 mb-6">
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl">
-              <MapPin className="w-5 h-5 text-[#4C7BF3] flex-shrink-0 mt-0.5" />
+              <MapPin style={{ color: goldColor }} className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm mb-1">Dirección</p>
                 <p className="text-sm text-gray-600">{restaurant.address}</p>
@@ -78,7 +90,7 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
             </div>
 
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl">
-              <Clock className="w-5 h-5 text-[#4C7BF3] flex-shrink-0 mt-0.5" />
+              <Clock style={{ color: goldColor }} className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm mb-1">Horario</p>
                 <p className="text-sm text-gray-600">{restaurant.hours}</p>
@@ -86,7 +98,7 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
             </div>
 
             <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl">
-              <Phone className="w-5 h-5 text-[#4C7BF3] flex-shrink-0 mt-0.5" />
+              <Phone style={{ color: goldColor }} className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm mb-1">Teléfono</p>
                 <p className="text-sm text-gray-600">{restaurant.phone}</p>
@@ -101,10 +113,11 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
 
           <div className="border-t pt-6">
             <div className="flex items-center justify-between mb-4">
-              <h2>Reseñas ({restaurantReviews.length})</h2>
+              <h2>Reseñas ({reviews.length})</h2>
               <button 
                 onClick={() => onNavigate('add-review', restaurant)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#4C7BF3] text-white rounded-full hover:bg-[#3a5fc7] transition-colors"
+                style={{ backgroundColor: goldColor }}
+                className="flex items-center gap-2 px-4 py-2 text-black rounded-full hover:bg-opacity-90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 <span className="text-sm">Agregar</span>
@@ -112,7 +125,7 @@ export function RestaurantDetailScreen({ restaurant, onBack, onNavigate }: Resta
             </div>
 
             <div className="space-y-3">
-              {restaurantReviews.map((review) => (
+              {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
             </div>

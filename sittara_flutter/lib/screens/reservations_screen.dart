@@ -10,8 +10,12 @@ class ReservationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final upcomingReservations = mockReservations.where((r) => r.status != ReservationStatus.cancelled).toList();
-    final pastReservations = mockReservations.where((r) => r.status == ReservationStatus.cancelled).toList();
+    final upcomingReservations = mockReservations
+        .where((r) => r.status != ReservationStatus.cancelled)
+        .toList();
+    final pastReservations = mockReservations
+        .where((r) => r.status == ReservationStatus.cancelled)
+        .toList();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
@@ -26,11 +30,20 @@ class ReservationsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (upcomingReservations.isNotEmpty)
-              _buildReservationsSection(context, 'Próximas', upcomingReservations),
-            
+              _buildReservationsSection(
+                context,
+                'Próximas',
+                upcomingReservations,
+              ),
+
             if (pastReservations.isNotEmpty) ...[
-              if (upcomingReservations.isNotEmpty) const SizedBox(height: 24), // Spacer if both exist
-              _buildReservationsSection(context, 'Anteriores', pastReservations),
+              if (upcomingReservations.isNotEmpty)
+                const SizedBox(height: 24), // Spacer if both exist
+              _buildReservationsSection(
+                context,
+                'Anteriores',
+                pastReservations,
+              ),
             ],
 
             if (upcomingReservations.isEmpty && pastReservations.isEmpty)
@@ -42,13 +55,19 @@ class ReservationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildReservationsSection(BuildContext context, String title, List<Reservation> reservations) {
+  Widget _buildReservationsSection(
+    BuildContext context,
+    String title,
+    List<Reservation> reservations,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Column(
@@ -61,7 +80,8 @@ class ReservationsScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ReservationDetailScreen(reservation: reservation),
+                      builder: (context) =>
+                          ReservationDetailScreen(reservation: reservation),
                     ),
                   );
                 },
@@ -82,19 +102,26 @@ class ReservationsScreen extends StatelessWidget {
           children: [
             Text(
               'No tienes reservas aún',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const ExploreScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ExploreScreen(),
+                  ),
                 );
               },
               child: const Text(
                 'Explorar restaurantes',
-                style: TextStyle(color: Color(0xFF4C7BF3), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Color(0xFF4C7BF3),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
