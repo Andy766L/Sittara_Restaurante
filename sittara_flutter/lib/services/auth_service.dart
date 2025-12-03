@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models.dart';
+import '../models.dart' as models;
 import '../services/supabase_service.dart';
 
 typedef SupabaseUser = User; // Alias for clarity, avoid conflicts with our models.User
@@ -41,10 +41,10 @@ class AuthService extends ChangeNotifier {
       return _currentUser;
     } on AuthException catch (e) {
       print('Supabase login error: ${e.message}');
-      return null;
+      rethrow;
     } catch (e) {
       print('Unexpected login error: $e');
-      return null;
+      rethrow;
     }
   }
 

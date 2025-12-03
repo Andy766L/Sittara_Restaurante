@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -21,30 +22,63 @@ class _MapScreenState extends State<MapScreen> {
   bool _isLoading = true;
   String? _errorMessage;
 
+
+
+  StreamSubscription<Position>? _positionStreamSubscription;
+
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    _startLocationStream();
   }
 
-  Future<void> _getCurrentLocation() async {
+  @override
+  void dispose() {
+    _positionStreamSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _startLocationStream() async {
     try {
-      final position = await _locationService.determinePosition();
-      setState(() {
-        _currentPosition = _locationService.positionToLatLng(position);
-        _isLoading = false;
-      });
-      // Center map on user location after loading
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_currentPosition != null) {
-          _mapController.move(_currentPosition!, 14.0);
-        }
-      });
+      // Check permissions first
+      await _locationService.determinePosition();
+      
+      const LocationSettings locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      );
+
+      _positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: locationSettings,
+      ).listen(
+        (Position position) {
+          setState(() {
+            _currentPosition = _locationService.positionToLatLng(position);
+            _isLoading = false;
+            _errorMessage = null;
+          });
+          
+          // Move map to user only on first fix or if user requests it
+          // For now, let's just update the marker. The FAB centers it.
+          if (_isLoading) { // First fix
+             _mapController.move(_currentPosition!, 14.0);
+          }
+        },
+        onError: (error) {
+          setState(() {
+            _errorMessage = error.toString();
+            _isLoading = false;
+            // Fallback only if we don't have a position yet
+            if (_currentPosition == null) {
+               _currentPosition = const LatLng(40.4168, -3.7038);
+            }
+          });
+        },
+      );
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
-        // Fallback to Madrid center if location fails
         _currentPosition = const LatLng(40.4168, -3.7038);
       });
     }
@@ -90,7 +124,7 @@ class _MapScreenState extends State<MapScreen> {
                     _isLoading = true;
                     _errorMessage = null;
                   });
-                  _getCurrentLocation();
+                  _startLocationStream();
                 },
                 child: const Text('Reintentar'),
               ),

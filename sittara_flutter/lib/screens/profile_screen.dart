@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sittara_flutter/services/auth_service.dart';
 import 'package:sittara_flutter/screens/login_screen.dart';
 import 'package:sittara_flutter/models.dart';
+import 'package:sittara_flutter/screens/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -88,7 +89,14 @@ class ProfileScreenState extends State<ProfileScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {}, // Placeholder
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditProfileScreen(user: user),
+                  ),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Theme.of(context).primaryColor,

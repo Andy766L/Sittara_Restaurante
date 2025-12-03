@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sittara_flutter/screens/main_screen.dart';
 import 'package:sittara_flutter/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -55,9 +56,16 @@ class RegisterScreenState extends State<RegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = 'Error en el registro';
+        if (e is AuthException) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = e.toString();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error en el registro: $e'),
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
           ),
         );

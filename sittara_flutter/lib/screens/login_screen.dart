@@ -4,6 +4,7 @@ import 'package:sittara_flutter/screens/main_screen.dart';
 import 'package:sittara_flutter/screens/forgot_password_screen.dart';
 import 'package:sittara_flutter/screens/register_screen.dart';
 import 'package:sittara_flutter/services/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,24 +25,39 @@ class LoginScreenState extends State<LoginScreen> {
     });
 
     final authService = Provider.of<AuthService>(context, listen: false);
-    final user = await authService.login(
-      _emailController.text,
-      _passwordController.text,
-    );
+    try {
+      final user = await authService.login(
+        _emailController.text,
+        _passwordController.text,
+      );
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
 
-      if (user != null) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      } else {
+        if (user != null) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        String errorMessage = 'Ocurrió un error inesperado';
+        if (e is AuthException) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = e.toString();
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email o contraseña incorrectos.'),
+          SnackBar(
+            content: Text(errorMessage),
             backgroundColor: Colors.red,
           ),
         );
